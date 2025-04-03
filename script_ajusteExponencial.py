@@ -19,7 +19,7 @@ def leer_archivos_txt(carpeta):
 def exponencial_decreciente(x, a, b, c):
     return a * np.exp(-b * x) + c
 
-def ajustar_exponencial(data, x_min=640, x_max=680):
+def ajustar_exponencial(data, x_min, x_max):
     x = data[:, 0]
     y = data[:, 1]
     mask = (x >= x_min) & (x <= x_max)
@@ -38,14 +38,15 @@ def ajustar_exponencial(data, x_min=640, x_max=680):
     c0 = y_rango.min()
 
     try:
-        popt, _ = curve_fit(
+        popt, pcov = curve_fit(
             exponencial_decreciente,
             x_norm,
             y_rango,
             p0=[a0, b0, c0],
             maxfev=10000
         )
-        return popt, x_offset
+        perr = np.sqrt(np.diag(pcov))  # errores estándar
+        return (popt, perr, x_offset)
     except RuntimeError as e:
         print("❌ No se pudo ajustar:", e)
         return None
@@ -64,15 +65,25 @@ def graficar_datos_y_ajustes(datos, x_min, x_max):
 
         result = ajustar_exponencial(data, x_min, x_max)
         if result is not None:
-            (a, b, c), x_offset = result
-            print(f"→ Archivo: {archivo}, ajuste: y = {a:.4f} * exp(-{b:.4f} * (x - {x_offset:.1f})) + {c:.4f}")
-            parametros_a.append((archivo, a))
-        else:
-            parametros_a.append((archivo, None))
+            (popt, perr, x_offset) = result
+            a, b, c = popt
+            a_err, b_err, c_err = perr
 
+            print(f"→ Archivo: {archivo}")
+            print(f"   a = {a:.4f} ± {a_err:.4f}")
+            print(f"   b = {b:.4f} ± {b_err:.4f}")
+            print(f"   c = {c:.4f} ± {c_err:.4f}")
+
+            parametros_a.append((archivo, a))
+
+            # ⚠️ GRAFICAR LA CURVA AJUSTADA
+            x_fit = np.linspace(x_min, x_max, 200)
+            x_fit_norm = x_fit - x_offset
+            y_fit = exponencial_decreciente(x_fit_norm, a, b, c)
+            plt.plot(x_fit, y_fit, '--', label=f"Ajuste {archivo}")
     plt.xlabel("X")
     plt.ylabel("Y (escala log)")
-    plt.yscale('log')
+    #plt.yscale('log')
     plt.legend()
     plt.title("Espectros y Ajustes Exponenciales")
     plt.grid()
@@ -84,7 +95,7 @@ def graficar_datos_y_ajustes(datos, x_min, x_max):
 
 carpeta = "2025_03_18_radiocromic_ocean_espectrometro"
 datos = leer_archivos_txt(carpeta)
-x_min = 640
+x_min = 645
 x_max = 680
 
 # Ajustar y recolectar valores 'a'
@@ -112,7 +123,8 @@ for archivo in nombres_ordenados:
     data = datos[archivo]
     result = ajustar_exponencial(data, x_min, x_max)
     if result is not None:
-        (_, b, _), _ = result
+        (popt, _, _) = result
+        b = popt[1]
         solo_b.append(b)
     else:
         solo_b.append(np.nan)
