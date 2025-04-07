@@ -60,7 +60,7 @@ def graficar_datos(datos):
     plt.xlabel("X")
     plt.ylabel("Y")
     plt.legend()
-    plt.title("Gráfica de todos los archivos TXT")
+    plt.title("Espectros de las radiocromicas ")
     plt.grid()
     plt.show()
 
@@ -81,17 +81,19 @@ slope, intercept, r_value, p_value, std_err = linregress(valores_filtrados, area
 print(f"Recta ajustada: Área = {slope:.4f} * Dosis + {intercept:.4f}")
 print(f"R² = {r_value**2:.4f}")
 
-
-
 x_fit = np.linspace(min(valores_filtrados), max(valores_filtrados), 200)
 y_fit = slope * x_fit + intercept
 
+
+print(f"y = {slope:.4f} * x + {intercept:.4f}")
+print(f"R² = {r_value**2:.4f}")
+
 plt.figure(figsize=(8, 5))
 plt.plot(valores_filtrados, areas_filtradas, 'o', label="Área integrada")
-plt.plot(x_fit, y_fit, 'r--', label=f"Ajuste lineal: y = {slope:.2f}x + {intercept:.2f}")
+plt.plot(x_fit, y_fit, 'r--', label=f"Ajuste: y = {slope:.2f}x + {intercept:.2f}\nR² = {r_value**2:.3f}")
 plt.xlabel("Dosis (Gy)")
-plt.ylabel("Área bajo la curva (660–680)")
-plt.title("Área vs Dosis con Ajuste Lineal")
+plt.ylabel("Área(660–680)")
+plt.title(" Integral ")
 plt.grid(True)
 plt.legend()
 plt.show()
