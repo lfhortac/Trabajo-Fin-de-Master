@@ -9,7 +9,7 @@ def leer_archivos_txt(carpeta):
     for archivo in archivos:
         ruta = os.path.join(carpeta, archivo)
         try:
-            data = np.loadtxt(ruta, skiprows=17)
+            data = np.loadtxt(ruta, skiprows=19)
             datos[archivo] = data
         except Exception as e:
             print(f"Error al leer {archivo}: {e}")
@@ -28,6 +28,7 @@ def graficar_datos(datos):
             print(f"Formato desconocido en {archivo}, no se grafica.")
     
     plt.xlabel("X")
+    #plt.yscale("log")
     plt.ylabel("Y")
     plt.legend()
     plt.title("Gráfica de todos los archivos TXT")
@@ -35,6 +36,6 @@ def graficar_datos(datos):
     plt.show()
 
 # Carpeta donde están los archivos
-carpeta = "2025_03_18_radiocromic_ocean_espectrometro"
+carpeta = "2025_03_18_espectrometro_FC_Ciencias"
 datos = leer_archivos_txt(carpeta)
 graficar_datos(datos)
