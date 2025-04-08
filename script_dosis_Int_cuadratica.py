@@ -8,6 +8,25 @@ od_folder = r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\2025_03_18_radioc
 # Lista para guardar resultados
 resultados = []
 
+
+
+def despejar_dosis(area_integrada):
+    a = 0.01
+    b = 0.45
+    c = -0.14 - area_integrada
+
+    discriminante = b**2 - 4 * a * c
+
+    if discriminante < 0:
+        return None  # No hay soluciones reales
+
+    sqrt_disc = np.sqrt(discriminante)
+    x1 = (-b + sqrt_disc) / (2 * a)
+    x2 = (-b - sqrt_disc) / (2 * a)
+
+    return x1, x2  # Devuelve ambas soluciones
+
+
 # Recorrer archivos
 for archivo in os.listdir(od_folder):
     if archivo.endswith('.txt'):
@@ -48,13 +67,27 @@ for archivo in os.listdir(od_folder):
         # Integración
         valor_integrado = np.trapezoid(y, x)
 
-        # Cálculo de dosis
-        dosis = (valor_integrado / 0.57) + (0.37 / 0.57)
+        # Cálculo de dosis con función inversa cuadrática
+        dosis_roots = despejar_dosis(valor_integrado)
+
+        if dosis_roots is None:
+            print(f"No hay solución real para {archivo}")
+            continue
+
+        positivas = [x for x in dosis_roots if x >= 0]
+
+        if not positivas:
+            print(f"Ninguna solución positiva para {archivo}")
+            continue
+
+        dosis_valida = min(positivas)
 
         resultados.append({
             'Archivo': archivo,
             'Integrado_OD': valor_integrado,
-            'Dosis': dosis
+            'Dosis_1': dosis_roots[0],
+            'Dosis_2': dosis_roots[1],
+            'Dosis_valida': dosis_valida
         })
 
 # Guardar CSV

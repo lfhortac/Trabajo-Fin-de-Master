@@ -75,22 +75,28 @@ for i, (archivo, area) in enumerate(areas):
         valores_filtrados.append(valores_x[i])
         areas_filtradas.append(area)
 
-# Ajuste lineal
-slope, intercept, r_value, p_value, std_err = linregress(valores_filtrados, areas_filtradas)
+# Ajuste cuadrático
+coeficientes = np.polyfit(valores_filtrados, areas_filtradas, 2)  # Grado 2
+a, b, c = coeficientes
+print(f"Parábola ajustada: Área = {a:.4f} * Dosis² + {b:.4f} * Dosis + {c:.4f}")
 
-print(f"Recta ajustada: Área = {slope:.4f} * Dosis + {intercept:.4f}")
-print(f"R² = {r_value**2:.4f}")
+# Calcular R² manualmente
+y_pred = np.polyval(coeficientes, valores_filtrados)
+ss_res = np.sum((np.array(areas_filtradas) - y_pred) ** 2)
+ss_tot = np.sum((np.array(areas_filtradas) - np.mean(areas_filtradas)) ** 2)
+r_squared = 1 - (ss_res / ss_tot)
+print(f"R² = {r_squared:.4f}")
 
+# Para graficar la curva ajustada
 x_fit = np.linspace(min(valores_filtrados), max(valores_filtrados), 200)
-y_fit = slope * x_fit + intercept
+y_fit = np.polyval(coeficientes, x_fit)
 
 
-print(f"y = {slope:.4f} * x + {intercept:.4f}")
-print(f"R² = {r_value**2:.4f}")
+
 
 plt.figure(figsize=(8, 5))
 plt.plot(valores_filtrados, areas_filtradas, 'o', label="Área integrada")
-#plt.plot(x_fit, y_fit, 'r--', label=f"Ajuste: y = {slope:.2f}x + {intercept:.2f}\nR² = {r_value**2:.3f}")
+plt.plot(x_fit, y_fit, 'r--', label=f"Ajuste: y = {a:.2f}x² + {b:.2f}x + {c:.2f}\nR² = {r_squared:.3f}")
 plt.xlabel("Dosis (Gy)")
 plt.ylabel("Área(660–680)")
 plt.title(" Integral ")
