@@ -4,8 +4,10 @@ codigoMalo
 copiadeSeguridadDatosEspectrofotometro.zip
 2025_03_18_espectrometro_FC_Ciencias
 RC_nn
+resultados
 # Ignora todos los archivos de texto
 *.txt
+.png
 
 # Ignora los archivos relacionados a API keys
 .env
