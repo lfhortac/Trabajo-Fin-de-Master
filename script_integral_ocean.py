@@ -1,9 +1,19 @@
+#Este script integra el área bajo la curva de espectros de radiocromicos y ajusta una recta a los datos obtenidos.
 import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import linregress
-from natsort import natsorted
 
+
+
+# --- PARTE PRINCIPAL ---
+x_min = 660 
+x_max = 680
+carpeta = r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\2025_03_18_radiocromic_ocean_espectrometro'
+ 
+## --- Rango de dosis para los archivos ---
+# Se asume que los archivos están ordenados de acuerdo a los valores de dosis
+valores_x = [0.1, 0.3, 0.5, 1, 2, 4, 6, 8, 10, 12, 14, 16, 18,20]
 
 
 def leer_archivos_txt(carpeta):
@@ -13,12 +23,14 @@ def leer_archivos_txt(carpeta):
     for archivo in archivos:
         ruta = os.path.join(carpeta, archivo)
         try:
-            data = np.loadtxt(ruta, skiprows=19)
+            data = np.loadtxt(ruta, skiprows=17)
             datos[archivo] = data
         except Exception as e:
             print(f"Error al leer {archivo}: {e}")
     
     return datos
+
+datos = leer_archivos_txt(carpeta)
 
 def integrar_area(data, x_min, x_max):
     x = data[:, 0]
@@ -28,27 +40,14 @@ def integrar_area(data, x_min, x_max):
     y_rango = y[mask]
 
     if len(x_rango) < 2:
-        print("Muy pocos puntos para integrar.")
+        print("⚠️ Muy pocos puntos para integrar.")
         return None
 
-    # Ordenar por longitud de onda (por si vienen al revés)
-    orden = np.argsort(x_rango)
-    x_rango = x_rango[orden]
-    y_rango = y_rango[orden]
-
-    area = np.trapezoid(y_rango, x_rango)
+    area = np.trapz(y_rango, x_rango)
     return area
 
-# --- PARTE PRINCIPAL ---
-x_min = 660 
-x_max = 680
-carpeta = r"C:\Users\luis-\Downloads\TFM\DatosEspectrometria\2025_03_18_espectrometro_FC_Ciencias\OD_resultados"
-datos = leer_archivos_txt(carpeta)
-
-valores_x = [0.1, 0.3, 0.5,0.7, 1, 2, 4, 6, 8, 10, 12, 14, 16, 18,20]
-archivos_ordenados = natsorted(datos.keys())
 areas = []
-for i, archivo in enumerate(archivos_ordenados):
+for i, archivo in enumerate(sorted(datos.keys())):
     data = datos[archivo]
     area = integrar_area(data, x_min, x_max)
     if area is not None:
@@ -66,8 +65,7 @@ def graficar_datos(datos):
     plt.xlabel("X")
     plt.ylabel("Y")
     plt.legend()
-    plt.title("Densidad Óptica")
-    #plt.yscale("log")
+    plt.title("Espectros de las radiocromicas ")
     plt.grid()
     plt.show()
 

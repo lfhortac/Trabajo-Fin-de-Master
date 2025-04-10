@@ -1,9 +1,11 @@
+#Este script calcula la dosis a partir de los OD generados por el espectrófotometro,
+#usando una regresion lineal(prebiamnete calculada en otro script) y guarda los resultados en un CSV.
 import os
 import numpy as np
 import pandas as pd
 
 # Ruta a los OD generados
-od_folder = r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\2025_03_18_radiocromic_ocean_espectrometro'
+od_folder = r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\2025_03_18_espectrometro_FC_Ciencias\OD_resultados'
 
 # Lista para guardar resultados
 resultados = []
@@ -49,7 +51,8 @@ for archivo in os.listdir(od_folder):
         valor_integrado = np.trapezoid(y, x)
 
         # Cálculo de dosis
-        dosis = (valor_integrado / 0.57) + (0.37 / 0.57)
+        dosis = (valor_integrado / 0.57) + (0.37 / 0.57)  # Ajustar según la regresión lineal
+        # Guardar resultados
 
         resultados.append({
             'Archivo': archivo,

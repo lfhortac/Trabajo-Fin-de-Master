@@ -12,8 +12,8 @@ from natsort import natsorted
 # === CONFIGURACIÓN ===
 #carpeta_muestras = r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\2025_03_18_espectrometro_FC_Ciencias\OD_resultados'  # CAMBIAR a tu ruta
 #carpeta_muestras = r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\RC_nn\OD_resultados'  # CAMBIAR a tu ruta
-carpeta_muestras=r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\2025_03_18_radiocromic_ocean_espectrometro\suavizados'
-#carpeta_muestras = r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\RC_nn\OD_resultados\suavizados'  # CAMBIAR a tu ruta
+#carpeta_muestras=r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\2025_03_18_radiocromic_ocean_espectrometro\suavizados'
+carpeta_muestras = r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\RC_nn\OD_resultados\suavizados'  # CAMBIAR a tu ruta
 archivo_calibracion = "resultados/curva_calibracion_total.csv"
 rango_min, rango_max =  605, 665 
 max_picos = 10
