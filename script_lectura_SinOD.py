@@ -6,11 +6,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # Ruta base
-base_path = r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\RC_nn'
-archivo_referencia = 'Radio_0_spectra.txt'
+base_path = r'C:\Users\luis-\Downloads\TFM\DatosEspectrometria\Datos19mayo\RC3'
+archivo_referencia = 'RC3_ref.txt'  # Cambia esto por el nombre de tu archivo de referencia
 # Leer I0 (referencia)
 i0_file = os.path.join(base_path, 'referencias', archivo_referencia)
-i0_data = np.loadtxt(i0_file)
+i0_data = np.loadtxt(i0_file, skiprows=19,max_rows=1000)
 i0 = i0_data[:, 1]  # segunda columna
 
 # Buscar todos los archivos de espectros menos la referencia
@@ -25,7 +25,10 @@ plt.figure(figsize=(10, 6))
 
 for filename in spectra_files:
     filepath = os.path.join(base_path, filename)
-    data = np.loadtxt(filepath)
+    data = np.loadtxt(filepath, skiprows=19,max_rows=1000)
+    if data.ndim == 1:
+        print(f"Formato desconocido en {filename}, omitiendo...")
+        continue
     
     wavelength = data[:, 0]  # Asumimos que la primera columna es longitud de onda
     intensity = data[:, 1]   # Segunda columna es I(l)
